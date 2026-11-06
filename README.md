@@ -194,7 +194,7 @@ O que foi personalizado:
 
 ![Produtos editáveis dentro da categoria](docs/img/admin-categoria-inline.png)
 
-![Lista de áreas de entrega no Django Admin, ainda sem cadastros](docs/img/admin-areas-entrega.png)
+![Lista de áreas de entrega no Django Admin com Abreu e Lima cadastrada](docs/img/admin-areas-entrega.png)
 
 ## 8. Prints
 
@@ -212,11 +212,15 @@ O que foi personalizado:
 
 ![Resposta para uma UF inválida](docs/img/municipios-uf-invalida.png)
 
-Os prints da criação de produto (201) e da validação de preço negativo (400) ainda precisam ser adicionados.
+### Criação e validação de produto
+
+![Criação de produto com resposta HTTP 201](docs/img/api-produto-201.png)
+
+![Rejeição de preço negativo com resposta HTTP 400](docs/img/api-preco-negativo-400.png)
 
 ## 9. Dificuldades e aprendizados
 
-[PREENCHER: escreva com sinceridade o que foi mais difícil, como resolveu e o que aprendeu. Este texto precisa ser o seu relato real. Dicas: erros de comando no terminal, ativar o venv, migrações, token, entender serializer/viewset, o IBGE.]
+A parte mais complicada foi conseguir acessar o site, porque havia um erro em uma parte do código. Também aprendi a conciliar o uso da IA com o conhecimento do conteúdo: é importante entender e conferir as sugestões, em vez de apenas copiá-las.
 
 ## 10. Perguntas-chave
 
@@ -267,7 +271,7 @@ GET busca, POST cria, PUT substitui tudo, PATCH altera parte e DELETE remove. Pa
 - **404:** registro que não existe (ex.: `/api/produtos/9999/`).
 
 **15. Onde coloquei a validação do preço? O que a API devolve com preço negativo?**
-No serializer (`validate_preco` em `ProdutoSerializer`) e também no model, com `MinValueValidator(0)`. A API responde 400 com uma mensagem de erro no campo `preco`. [PREENCHER: teste e cole aqui a mensagem exata que apareceu para você.]
+No model, com `MinValueValidator(0)`, e no serializer (`validate_preco` em `ProdutoSerializer`). Ao enviar um preço negativo, a API responde 400 com `preco: ["Certifque-se de que este valor seja maior ou igual a 0."]`.
 
 **16. Diferença entre Admin e API? Quem usa cada um?**
 O Admin é um painel visual para quem administra: o dono cadastra categorias e produtos nele. A API é feita para programas (site, app) lerem e enviarem dados em JSON.
@@ -299,7 +303,11 @@ O app envia uma requisição HTTP, por exemplo `GET /api/produtos/?disponivel=tr
 
 **Extra C5:** o model `AreaEntrega` (município, código IBGE, taxa) está no admin e, ao criar pela API, o serializer consulta o IBGE para confirmar que o código existe.
 
-O código da view está em [`cardapio/views.py`](cardapio/views.py). As respostas de sucesso e UF inválida estão registradas na seção 8. O print do código da view e os prints de uma área cadastrada e da validação de código IBGE inexistente ainda precisam ser adicionados.
+O código da view está em [`cardapio/views.py`](cardapio/views.py). A área cadastrada aparece no print da seção 7, e a validação de código IBGE inexistente está abaixo:
+
+![API rejeitando código IBGE inexistente](docs/img/area-entrega-ibge-400.png)
+
+A captura do código da view aberto no VS Code, com o trecho legível, ainda precisa ser adicionada.
 
 **E1. Diferença entre minha API fornecer dados e consumir dados de outra API?**
 Quando fornece, ela é o servidor: outros sistemas pedem dados a ela (como o app pedindo produtos). Quando consome, ela é o cliente: faz a requisição para outro servidor (o IBGE) e usa a resposta.

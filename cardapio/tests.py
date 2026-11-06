@@ -69,7 +69,10 @@ class CatalogApiTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("preco", response.data)
+        self.assertEqual(
+            response.data["preco"],
+            ["Certifque-se de que este valor seja maior ou igual a 0."],
+        )
 
     def test_category_products_action_only_returns_its_products(self):
         another_category = Categoria.objects.create(nome="Bebidas")
