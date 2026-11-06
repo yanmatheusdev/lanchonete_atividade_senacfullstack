@@ -27,3 +27,16 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome
+
+
+class AreaEntrega(models.Model):
+    municipio = models.CharField(max_length=150)
+    codigo_ibge = models.PositiveIntegerField(unique=True)
+    taxa_entrega = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
+
+    def __str__(self):
+        return self.municipio
