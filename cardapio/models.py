@@ -30,10 +30,12 @@ class Produto(models.Model):
 
 
 class AreaEntrega(models.Model):
+    """Extra C5: municípios atendidos pela entrega."""
+
     municipio = models.CharField(max_length=150)
     codigo_ibge = models.PositiveIntegerField(unique=True)
     taxa_entrega = models.DecimalField(
-        max_digits=8,
+        max_digits=6,
         decimal_places=2,
         validators=[MinValueValidator(0)],
     )

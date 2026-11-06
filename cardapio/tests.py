@@ -120,7 +120,7 @@ class CatalogApiTests(APITestCase):
         response = self.client.post(reverse("categoria-list"), data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    @patch("cardapio.services.requests.get")
+    @patch("cardapio.ibge.requests.get")
     def test_municipalities_endpoint_normalizes_uf(self, get):
         response_from_ibge = Mock()
         response_from_ibge.json.return_value = [
@@ -128,34 +128,34 @@ class CatalogApiTests(APITestCase):
         ]
         get.return_value = response_from_ibge
 
-        response = self.client.get(reverse("municipio-list"), {"uf": "pe"})
+        response = self.client.get(reverse("municipios"), {"uf": "pe"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {
             "uf": "PE",
             "total": 1,
-            "municipios": [{"id": 2600054, "nome": "Abreu e Lima"}],
+            "municipios": [{"codigo_ibge": 2600054, "nome": "Abreu e Lima"}],
         })
 
-    @patch("cardapio.services.requests.get")
+    @patch("cardapio.ibge.requests.get")
     def test_municipalities_endpoint_rejects_missing_or_invalid_uf(self, get):
         for params in ({}, {"uf": "XX"}):
             with self.subTest(params=params):
-                response = self.client.get(reverse("municipio-list"), params)
+                response = self.client.get(reverse("municipios"), params)
                 self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         get.assert_not_called()
 
-    @patch("cardapio.services.requests.get", side_effect=requests.Timeout)
+    @patch("cardapio.ibge.requests.get", side_effect=requests.Timeout)
     def test_ibge_outage_returns_service_unavailable(self, get):
-        response = self.client.get(reverse("municipio-list"), {"uf": "PE"})
+        response = self.client.get(reverse("municipios"), {"uf": "PE"})
 
         self.assertEqual(
             response.status_code,
             status.HTTP_503_SERVICE_UNAVAILABLE,
         )
 
-    @patch("cardapio.serializers.municipality_exists", return_value=False)
-    def test_delivery_area_rejects_unknown_ibge_code(self, municipality_exists):
+    @patch("cardapio.serializers.municipio_existe", return_value=False)
+    def test_delivery_area_rejects_unknown_ibge_code(self, municipio_existe):
         user = get_user_model().objects.create_user(
             username="area-user",
             password="test-password",

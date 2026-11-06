@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     AreaEntregaViewSet,
     CategoriaViewSet,
-    MunicipioViewSet,
+    MunicipiosView,
     ProdutoViewSet,
 )
 
@@ -12,8 +12,8 @@ router = DefaultRouter()
 router.register("categorias", CategoriaViewSet, basename="categoria")
 router.register("produtos", ProdutoViewSet, basename="produto")
 router.register("areas-entrega", AreaEntregaViewSet, basename="area-entrega")
-router.register("municipios", MunicipioViewSet, basename="municipio")
 
 urlpatterns = [
+    path("municipios/", MunicipiosView.as_view(), name="municipios"),
     path("", include(router.urls)),
 ]

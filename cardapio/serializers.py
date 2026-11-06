@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Categoria, Produto
+from .ibge import IBGEIndisponivel, municipio_existe
+from .models import AreaEntrega, Categoria, Produto
 
 
 class CategoriaSerializer(serializers.ModelSerializer):
@@ -19,4 +20,21 @@ class ProdutoSerializer(serializers.ModelSerializer):
     def validate_preco(self, value):
         if value < 0:
             raise serializers.ValidationError("O preço não pode ser negativo.")
+        return value
+
+
+class AreaEntregaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AreaEntrega
+        fields = ["id", "municipio", "codigo_ibge", "taxa_entrega"]
+
+    def validate_codigo_ibge(self, value):
+        try:
+            existe = municipio_existe(value)
+        except IBGEIndisponivel:
+            raise serializers.ValidationError(
+                "Não foi possível validar o código no IBGE agora. Tente novamente."
+            )
+        if not existe:
+            raise serializers.ValidationError("Código IBGE inexistente.")
         return value
