@@ -1,5 +1,5 @@
 from django.db.models import ProtectedError
-from rest_framework import status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -10,6 +10,8 @@ from .serializers import CategoriaSerializer, ProdutoSerializer
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all().order_by("id")
     serializer_class = CategoriaSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["nome"]
 
     def destroy(self, request, *args, **kwargs):
         try:
@@ -31,6 +33,8 @@ class CategoriaViewSet(viewsets.ModelViewSet):
 
 class ProdutoViewSet(viewsets.ModelViewSet):
     serializer_class = ProdutoSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["nome"]
 
     def get_queryset(self):
         queryset = Produto.objects.select_related("categoria").order_by("id")
